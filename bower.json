@@ -1,0 +1,21 @@
+{
+  "name": "lab9",
+  "homepage": "https://github.com/vdn207/interactive_scatter_plot",
+  "authors": [
+    "vdn207"
+  ],
+  "description": "lab9-homework",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jQuery": "^2.2.3",
+    "d3": "^3.5.16"
+  }
+}
