@@ -1,3 +1,12 @@
+<!-- 
+Big Data Lab9
+Interactive Scatterplot
+Data: car.csv 
+Author: Varun D N
+
+The structure of the D3 visualization code was inspired from http://bl.ocks.org/d3noob/7030f35b72de721622b8.
+-->
+
 <html>
 <head>
 	<title>Interactive Scatter Plot</title>
@@ -115,65 +124,62 @@
 				var lower_mpg = +document.getElementById("mpg-min").value;
 				var upper_mpg = +document.getElementById("mpg-max").value;
 
-				console.log(lower_mpg);
-				console.log(upper_mpg);
+				var margin = {top: 5, right: 20, bottom: 30, left: 40},
+			    width = 560,
+			    height = 400;
 
-					var margin = {top: 5, right: 20, bottom: 30, left: 40},
-				    width = 560,
-				    height = 400;
+				// setup x 
+				var xValue = function(d) { return d[x_axis_data] }, // data -> value
+				    xScale = d3.scale.linear().range([0, width]), // value -> display
+				    xMap = function(d) { return xScale(xValue(d));}, // data -> display
+				    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
-					// setup x 
-					var xValue = function(d) { return d[x_axis_data] }, // data -> value
-					    xScale = d3.scale.linear().range([0, width]), // value -> display
-					    xMap = function(d) { return xScale(xValue(d));}, // data -> display
-					    xAxis_new = d3.svg.axis().scale(xScale).orient("bottom");
+				// setup y
+				var yValue = function(d) { return d[y_axis_data]; }, // data -> value
+				    yScale = d3.scale.linear().range([height, 0]), // value -> display
+				    yMap = function(d) {return yScale(yValue(d));}, // data -> display
+				    yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-					// setup y
-					var yValue = function(d) { return d[y_axis_data]; }, // data -> value
-					    yScale = d3.scale.linear().range([height, 0]), // value -> display
-					    yMap = function(d) {return yScale(yValue(d));}, // data -> display
-					    yAxis_new = d3.svg.axis().scale(yScale).orient("left");
+				// load data
+				d3.csv("car.csv", function(error, data) {
 
-					// load data
-					d3.csv("car.csv", function(error, data) {
+				  // change string (from CSV) into number format
+				  data.forEach(function(d) {
+				    	d[x_axis_data] = +d[x_axis_data];
+				    	d[y_axis_data] = +d[y_axis_data];
+				  });
 
-					  // change string (from CSV) into number format
-					  data.forEach(function(d) {
-					    	d[x_axis_data] = +d[x_axis_data];
-					    	d[y_axis_data] = +d[y_axis_data];
-					  });
+				  var new_data = data.filter(function(d) {return d.mpg >= lower_mpg && d.mpg <= upper_mpg})
 
-					  var new_data = data.filter(function(d) {return d.mpg >= lower_mpg && d.mpg <= upper_mpg})
+				  xScale.domain([d3.min(new_data, xValue)-1, d3.max(new_data, xValue)+1]);
+				  yScale.domain([d3.min(new_data, yValue)-1, d3.max(new_data, yValue)+1]);
 
-					  xScale.domain([d3.min(new_data, xValue)-1, d3.max(new_data, xValue)+1]);
-					  yScale.domain([d3.min(new_data, yValue)-1, d3.max(new_data, yValue)+1]);
+				
+				  svg.selectAll(".dot")
+				      .data(new_data)
+				      .transition()
+				      .attr("class", "dot")
+				      .attr("r", 3.5)
+				      .attr("cx", xMap)
+				      .attr("cy", yMap);
 
-					
-					  svg.selectAll(".dot")
-					      .data(new_data)
-					      .transition()
-					      .attr("class", "dot")
-					      .attr("r", 3.5)
-					      .attr("cx", xMap)
-					      .attr("cy", yMap);
+				    svg.selectAll(".dot")
+				      .data(new_data)
+				      .enter()
+				   	.append("circle")
+				      .attr("class", "dot")
+				      .attr("r", 3.5)
+				      .attr("cx", xMap)
+				      .attr("cy", yMap)
+				      .on("mouseover", function(d) {
+			          	d3.select("h4").text(d.name)
+				      });
 
-					    svg.selectAll(".dot")
-					      .data(new_data)
-					      .enter()
-					   	.append("circle")
-					      .attr("class", "dot")
-					      .attr("r", 3.5)
-					      .attr("cx", xMap)
-					      .attr("cy", yMap)
-					      .on("mouseover", function(d) {
-				          	d3.select("h4").text(d.name)
-					      });
-
-					   svg.selectAll(".dot")
-					       .data(new_data)					       
-					       .exit()
-					       .remove();
-						});	
+				   svg.selectAll(".dot")
+				       .data(new_data)					       
+				       .exit()
+				       .remove();
+					});	
 
 			};
 
